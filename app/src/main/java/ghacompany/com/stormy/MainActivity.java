@@ -91,6 +91,16 @@ public class MainActivity extends ActionBarActivity {
         Log.i(TAG, "SUMMARY: " +currently.getString("summary"));
         currentWeather.setPrecipChance(currently.getDouble("precipProbability"));
         Log.i(TAG, "PRECIPCHANCE: " +currently.getDouble("precipProbability"));
+        currentWeather.setTime(currently.getLong("time"));
+        Log.i(TAG, "TIME: " +currently.getLong("time"));
+        currentWeather.setIcon(currently.getString("icon"));
+        Log.i(TAG, "ICON: " +currently.getString("icon"));
+        currentWeather.setTemperature(currently.getDouble("temperature"));
+        Log.i(TAG, "TEMPERATURE: " +currently.getDouble("temperature"));
+        currentWeather.setTimeZone(timeZone);
+
+        Log.d(TAG, "TEMPERATURE: " + currentWeather.getFormattedTime());
+
         return new CurrentWeather();
     }
 
@@ -104,7 +114,6 @@ public class MainActivity extends ActionBarActivity {
         if(networkInfo != null && networkInfo.isConnected()){
             isAvailable = true;
         }
-
         return isAvailable;
     }
 
