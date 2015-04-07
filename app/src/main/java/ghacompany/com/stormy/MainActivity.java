@@ -91,7 +91,7 @@ public class MainActivity extends ActionBarActivity {
         Log.i(TAG, "SUMMARY: " +currently.getString("summary"));
         currentWeather.setPrecipChance(currently.getDouble("precipProbability"));
         Log.i(TAG, "PRECIPCHANCE: " +currently.getDouble("precipProbability"));
-        return currentWeather;
+        return new CurrentWeather();
     }
 
 
