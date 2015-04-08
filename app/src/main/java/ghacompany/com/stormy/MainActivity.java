@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -45,6 +46,7 @@ public class MainActivity extends ActionBarActivity {
     @InjectView(R.id.iconId)ImageView mIconImageView;
     @InjectView(R.id.refreshId)ImageView mRefreshImageView;
     @InjectView(R.id.locationId)TextView mLocationName;
+    @InjectView(R.id.progressBar)ProgressBar mProgressBar;
 
 
     @Override
@@ -53,6 +55,7 @@ public class MainActivity extends ActionBarActivity {
         setContentView(R.layout.activity_main);
         ButterKnife.inject(this);
 
+        mProgressBar.setVisibility(View.INVISIBLE);
         // create class object
         gps = new GPSTracker(MainActivity.this);
 
@@ -86,6 +89,7 @@ public class MainActivity extends ActionBarActivity {
         String forecastUrl = "https://api.forecast.io/forecast/"+API_KEY+"/"+latitude+","+longitude;
 
         if(isNetworkAvailable()) {
+            statusRefresh();
             OkHttpClient client = new OkHttpClient();
             Request request = new Request.Builder()
                     .url(forecastUrl)
@@ -94,7 +98,14 @@ public class MainActivity extends ActionBarActivity {
             call.enqueue(new Callback() {
                 @Override
                 public void onFailure(Request request, IOException e) {
-
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            updateDisplay();
+                            statusRefresh();
+                        }
+                    });
+                    alertUserAboutError();
                 }
 
                 @Override
@@ -108,6 +119,7 @@ public class MainActivity extends ActionBarActivity {
                                 @Override
                                 public void run() {
                                     updateDisplay();
+                                    statusRefresh();
                                 }
                             });
                         } else {
@@ -121,6 +133,17 @@ public class MainActivity extends ActionBarActivity {
             });
         }else{
             Toast.makeText(this, "failed network", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private void statusRefresh() {
+        if(mProgressBar.getVisibility() == View.INVISIBLE) {
+            mProgressBar.setVisibility(View.VISIBLE);
+            mRefreshImageView.setVisibility(View.INVISIBLE);
+        }
+        else {
+            mProgressBar.setVisibility(View.INVISIBLE);
+            mRefreshImageView.setVisibility(View.VISIBLE);
         }
     }
 

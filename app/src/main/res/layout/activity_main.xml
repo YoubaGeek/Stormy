@@ -125,7 +125,7 @@
         android:layout_marginTop="40dp"
         android:textColor="@android:color/white"
         android:textIsSelectable="false"
-        android:textSize="18sp"
+        android:textSize="28sp"
         android:gravity="center_horizontal"/>
 
     <ImageView
@@ -135,4 +135,12 @@
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:src="@mipmap/refresh"/>
+
+    <ProgressBar
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/progressBar"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_alignBottom="@+id/refreshId"/>
 </RelativeLayout>
