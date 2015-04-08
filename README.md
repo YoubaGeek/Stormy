@@ -3,7 +3,7 @@ A single page weather app for android
 
 This is just a side project for fun and it's free to use :)
 
-I'm using Android Studio as and IDE to develop this app.
+I'm using Android Studio as  IDE to develop this app and testing with my smartphone but if you want a good emulator I recommend Genymotion.
 
 I'm using forecast.io to have JSON data of weather it's free to use, try it!!
 
@@ -13,3 +13,8 @@ If you want to change it there is a several way to do it :)
 
 
 Happy coding!
+
+Library that I have used:
+-https://github.com/JakeWharton/butterknife 
+-https://github.com/square/okhttp
+-https://github.com/square/okio
