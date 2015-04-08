@@ -6,6 +6,8 @@ import android.net.NetworkInfo;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 
@@ -19,6 +21,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+
+import butterknife.ButterKnife;
+import butterknife.InjectView;
+
 /**
  * Created by Ayoub on 4/6/2015.
  */
@@ -27,10 +33,19 @@ public class MainActivity extends ActionBarActivity {
 
     public static  final  String TAG = MainActivity.class.getSimpleName();
     private CurrentWeather mCurrentWeather;
+
+    @InjectView(R.id.timeId) TextView mTimeLabel;
+    @InjectView(R.id.temperatureId) TextView mTemperatureLabel;
+    @InjectView(R.id.humidityValue) TextView mHumidityValue;
+    @InjectView(R.id.precipValue) TextView mPrecipValue;
+    @InjectView(R.id.summaryId) TextView mSummaryLabel;
+    @InjectView(R.id.iconId)ImageView mIconImageView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        ButterKnife.inject(this);
         String API_KEY = "cf62265b79b7f29f6ab95b4fbd0eb507";
         double latitude = 37.8267;
         double longitude = -122.423;
@@ -55,6 +70,12 @@ public class MainActivity extends ActionBarActivity {
                         if (response.isSuccessful()) {
                             Log.v(TAG, jsonData);
                             mCurrentWeather = getCurrentDetails(jsonData);
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    updateDisplay();
+                                }
+                            });
                         } else {
                             alertUserAboutError();
                         }
@@ -71,6 +92,14 @@ public class MainActivity extends ActionBarActivity {
             Toast.makeText(this,"failed network",Toast.LENGTH_LONG).show();
         }
         Log.d(TAG, "Main UI Code");
+    }
+
+    private void updateDisplay() {
+        mTemperatureLabel.setText(mCurrentWeather.getTemperature() + "");
+       /* mTimeLabel.setText(mCurrentWeather.getFormattedTime());
+        mHumidityValue.setText(mCurrentWeather.getHumidity() + "");
+        mPrecipValue.setText(mCurrentWeather.getPrecipChance() + "");
+        mSummaryLabel.setText(mCurrentWeather.getSummary());*/
     }
 
     private CurrentWeather getCurrentDetails(String jsonData) throws JSONException{
@@ -95,13 +124,13 @@ public class MainActivity extends ActionBarActivity {
         Log.i(TAG, "TIME: " +currently.getLong("time"));
         currentWeather.setIcon(currently.getString("icon"));
         Log.i(TAG, "ICON: " +currently.getString("icon"));
-        currentWeather.setTemperature(currently.getDouble("temperature"));
-        Log.i(TAG, "TEMPERATURE: " +currently.getDouble("temperature"));
+        currentWeather.setTemperature(currently.getInt("temperature"));
+        Log.i(TAG, "TEMPERATURE: " +currently.getInt("temperature"));
         currentWeather.setTimeZone(timeZone);
 
         Log.d(TAG, "TEMPERATURE: " + currentWeather.getFormattedTime());
 
-        return new CurrentWeather();
+        return currentWeather;
     }
 
 

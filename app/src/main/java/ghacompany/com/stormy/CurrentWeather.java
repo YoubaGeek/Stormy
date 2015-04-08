@@ -11,7 +11,7 @@ public class CurrentWeather {
 
     private String mIcon;
     private long mTime;
-    private double mTemperature;
+    private int mTemperature;
     private double mHumidity;
     private double mPrecipChance;
     private String mSummary;
@@ -93,12 +93,12 @@ public class CurrentWeather {
         mTime = time;
     }
 
-    public double getTemperature() {
+    public int getTemperature() {
 
-        return mTemperature;
+        return Math.round(mTemperature);
     }
 
-    public void setTemperature(double temperature) {
+    public void setTemperature(int temperature) {
 
         mTemperature = temperature;
     }
