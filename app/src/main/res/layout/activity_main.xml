@@ -10,7 +10,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="100"
+        android:text="--"
         android:id="@+id/temperatureId"
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true"
@@ -30,7 +30,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="At 5 : 00 PM it will be"
+        android:text=". . ."
         android:id="@+id/timeId"
         android:layout_above="@+id/temperatureId"
         android:layout_centerHorizontal="true"
@@ -40,7 +40,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Würzburg , GER"
+        android:text="Getting Location"
         android:id="@+id/locationId"
         android:layout_above="@+id/timeId"
         android:layout_centerHorizontal="true"
@@ -83,7 +83,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="0.88"
+                android:text="--"
                 android:id="@+id/humidityValue"
                 android:textColor="@android:color/white"
                 android:textSize="34sp"
@@ -101,13 +101,13 @@
                 android:layout_height="wrap_content"
                 android:text="RAIN/SNOW"
                 android:id="@+id/precipId"
-                android:textColor="#ffffffff"
+                android:textColor="#80ffffff"
                 android:gravity="center_horizontal"/>
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="100%"
+                android:text="--"
                 android:id="@+id/precipValue"
                 android:textColor="@android:color/white"
                 android:textSize="34sp"
@@ -118,7 +118,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Stormy with a chance of meatballs "
+        android:text="Getting Current Weather"
         android:id="@+id/summaryId"
         android:layout_below="@+id/linearLayout"
         android:layout_centerHorizontal="true"
@@ -127,4 +127,12 @@
         android:textIsSelectable="false"
         android:textSize="18sp"
         android:gravity="center_horizontal"/>
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/refreshId"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:src="@mipmap/refresh"/>
 </RelativeLayout>

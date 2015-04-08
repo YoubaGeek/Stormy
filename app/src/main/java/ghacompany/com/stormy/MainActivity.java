@@ -1,11 +1,13 @@
 package ghacompany.com.stormy;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -26,13 +28,14 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 
 /**
- * Created by Ayoub on 4/6/2015.
+ * Created by Ayoub.
  */
-
 public class MainActivity extends ActionBarActivity {
 
     public static  final  String TAG = MainActivity.class.getSimpleName();
     private CurrentWeather mCurrentWeather;
+    private GPSTracker gps;
+    private double latitude , longitude;
 
     @InjectView(R.id.timeId) TextView mTimeLabel;
     @InjectView(R.id.temperatureId) TextView mTemperatureLabel;
@@ -40,15 +43,46 @@ public class MainActivity extends ActionBarActivity {
     @InjectView(R.id.precipValue) TextView mPrecipValue;
     @InjectView(R.id.summaryId) TextView mSummaryLabel;
     @InjectView(R.id.iconId)ImageView mIconImageView;
+    @InjectView(R.id.refreshId)ImageView mRefreshImageView;
+    @InjectView(R.id.locationId)TextView mLocationName;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.inject(this);
+
+        // create class object
+        gps = new GPSTracker(MainActivity.this);
+
+        // check if GPS enabled
+        if(gps.canGetLocation()){
+
+            latitude = gps.getLatitude();
+            longitude = gps.getLongitude();
+
+            // \n is for new line
+            Toast.makeText(getApplicationContext(), "Your Location is - \nLat: " + latitude + "\nLong: " + longitude, Toast.LENGTH_LONG).show();
+        }else{
+            // can't get location
+            // GPS or Network is not enabled
+            // Ask user to enable GPS/network in settings
+            gps.showSettingsAlert();
+        }
+        mRefreshImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getForecast(latitude, longitude);
+            }
+        });
+        getForecast(latitude, longitude);
+
+        Log.d(TAG, "Main UI Code");
+    }
+
+    private void getForecast(double latitude, double longitude) {
         String API_KEY = "cf62265b79b7f29f6ab95b4fbd0eb507";
-        double latitude = 37.8267;
-        double longitude = -122.423;
         String forecastUrl = "https://api.forecast.io/forecast/"+API_KEY+"/"+latitude+","+longitude;
 
         if(isNetworkAvailable()) {
@@ -80,26 +114,25 @@ public class MainActivity extends ActionBarActivity {
                             alertUserAboutError();
                         }
                     }
-                    catch (IOException e) {
-                        Log.e(TAG, "Exception caught: ", e);
-                    }
-                    catch (JSONException e) {
+                    catch (IOException | JSONException e) {
                         Log.e(TAG, "Exception caught: ", e);
                     }
                 }
             });
         }else{
-            Toast.makeText(this,"failed network",Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "failed network", Toast.LENGTH_LONG).show();
         }
-        Log.d(TAG, "Main UI Code");
     }
 
     private void updateDisplay() {
         mTemperatureLabel.setText(mCurrentWeather.getTemperature() + "");
-       /* mTimeLabel.setText(mCurrentWeather.getFormattedTime());
+        mTimeLabel.setText("At " + mCurrentWeather.getFormattedTime() + " it will be");
         mHumidityValue.setText(mCurrentWeather.getHumidity() + "");
-        mPrecipValue.setText(mCurrentWeather.getPrecipChance() + "");
-        mSummaryLabel.setText(mCurrentWeather.getSummary());*/
+        mPrecipValue.setText(mCurrentWeather.getPrecipChance()  + "%");
+        mSummaryLabel.setText(mCurrentWeather.getSummary());
+        Drawable drawable = getResources().getDrawable(mCurrentWeather.getIconId());
+        mIconImageView.setImageDrawable(drawable);
+        mLocationName.setText(mCurrentWeather.getTimeZone());
     }
 
     private CurrentWeather getCurrentDetails(String jsonData) throws JSONException{
@@ -118,8 +151,8 @@ public class MainActivity extends ActionBarActivity {
         Log.i(TAG, "HUMIDITY: " +currently.getDouble("humidity"));
         currentWeather.setSummary(currently.getString("summary"));
         Log.i(TAG, "SUMMARY: " +currently.getString("summary"));
-        currentWeather.setPrecipChance(currently.getDouble("precipProbability"));
-        Log.i(TAG, "PRECIPCHANCE: " +currently.getDouble("precipProbability"));
+        currentWeather.setPrecipChance(currently.getInt("precipProbability"));
+        Log.i(TAG, "PRECIPCHANCE: " +currently.getInt("precipProbability"));
         currentWeather.setTime(currently.getLong("time"));
         Log.i(TAG, "TIME: " +currently.getLong("time"));
         currentWeather.setIcon(currently.getString("icon"));
