@@ -2,6 +2,11 @@ package ghacompany.com.stormy;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.location.Address;
+import android.location.Criteria;
+import android.location.Geocoder;
+import android.location.Location;
+import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.support.v7.app.ActionBarActivity;
@@ -24,6 +29,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.Locale;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -37,6 +44,7 @@ public class MainActivity extends ActionBarActivity {
     private CurrentWeather mCurrentWeather;
     private GPSTracker gps;
     private double latitude , longitude;
+    private String _Location;
 
     @InjectView(R.id.timeId) TextView mTimeLabel;
     @InjectView(R.id.temperatureId) TextView mTemperatureLabel;
@@ -59,20 +67,6 @@ public class MainActivity extends ActionBarActivity {
         // create class object
         gps = new GPSTracker(MainActivity.this);
 
-        // check if GPS enabled
-        if(gps.canGetLocation()){
-
-            latitude = gps.getLatitude();
-            longitude = gps.getLongitude();
-
-            // \n is for new line
-            Toast.makeText(getApplicationContext(), "Your Location is - \nLat: " + latitude + "\nLong: " + longitude, Toast.LENGTH_LONG).show();
-        }else{
-            // can't get location
-            // GPS or Network is not enabled
-            // Ask user to enable GPS/network in settings
-            gps.showSettingsAlert();
-        }
         mRefreshImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -85,6 +79,37 @@ public class MainActivity extends ActionBarActivity {
     }
 
     private void getForecast(double latitude, double longitude) {
+
+        // check if GPS enabled
+        if(gps.canGetLocation()){
+
+            latitude = gps.getLatitude();
+            longitude = gps.getLongitude();
+
+            LocationManager locationManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
+            String provider = locationManager.getBestProvider(new Criteria(), true);
+
+            Location locations = locationManager.getLastKnownLocation(provider);
+            List<String> providerList = locationManager.getAllProviders();
+            if(null!=locations && null!=providerList && providerList.size()>0){
+                longitude = locations.getLongitude();
+                latitude = locations.getLatitude();
+                Geocoder geocoder = new Geocoder(getApplicationContext(), Locale.getDefault());
+                try {
+                    List<Address> listAddresses = geocoder.getFromLocation(latitude, longitude, 1);
+                    if(null!=listAddresses&&listAddresses.size()>0){
+                        _Location = listAddresses.get(0).getAddressLine(0);
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        }else{
+
+            gps.showSettingsAlert();
+        }
+
         String API_KEY = "cf62265b79b7f29f6ab95b4fbd0eb507";
         String forecastUrl = "https://api.forecast.io/forecast/"+API_KEY+"/"+latitude+","+longitude;
 
