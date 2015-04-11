@@ -43,7 +43,8 @@ public class MainActivity extends ActionBarActivity {
     public static  final  String TAG = MainActivity.class.getSimpleName();
     private CurrentWeather mCurrentWeather;
     private GPSTracker gps;
-    private double latitude , longitude;
+    private double latitude;
+    private double longitude;
     private String _Location;
 
     @InjectView(R.id.timeId) TextView mTimeLabel;
@@ -65,7 +66,6 @@ public class MainActivity extends ActionBarActivity {
 
         mProgressBar.setVisibility(View.INVISIBLE);
         // create class object
-        gps = new GPSTracker(MainActivity.this);
 
         mRefreshImageView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -80,16 +80,27 @@ public class MainActivity extends ActionBarActivity {
 
     private void getForecast(double latitude, double longitude) {
 
+        gps = new GPSTracker(MainActivity.this);
+
         // check if GPS enabled
         if(gps.canGetLocation()){
 
             latitude = gps.getLatitude();
             longitude = gps.getLongitude();
-
-        }else{
-
+        }else if (isNetworkAvailable() && !gps.canGetLocation()){
             gps.showSettingsAlert();
         }
+
+        Geocoder gcd = new Geocoder(MainActivity.this, Locale.getDefault());
+        List<Address> addresses = null;
+        try {
+
+            addresses = gcd.getFromLocation(latitude, longitude, 1);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        if (addresses.size() > 0)
+            _Location = addresses.get(0).getLocality();
 
         String API_KEY = "cf62265b79b7f29f6ab95b4fbd0eb507";
         String forecastUrl = "https://api.forecast.io/forecast/"+API_KEY+"/"+latitude+","+longitude;
@@ -138,6 +149,7 @@ public class MainActivity extends ActionBarActivity {
                 }
             });
         }else{
+            mLocationName.setText("Failed Network!");
             Toast.makeText(this, "failed network", Toast.LENGTH_LONG).show();
         }
     }
@@ -161,10 +173,11 @@ public class MainActivity extends ActionBarActivity {
         mSummaryLabel.setText(mCurrentWeather.getSummary());
         Drawable drawable = getResources().getDrawable(mCurrentWeather.getIconId());
         mIconImageView.setImageDrawable(drawable);
-        mLocationName.setText(mCurrentWeather.getTimeZone());
+        mLocationName.setText(_Location);
     }
 
     private CurrentWeather getCurrentDetails(String jsonData) throws JSONException{
+
 
         //declare a jsonobject that contains the parent of the hierachy of the json data
         JSONObject data = new JSONObject(jsonData);
