@@ -7,7 +7,9 @@ I'm using Android Studio as  IDE to develop this app and testing with my smartph
 
 I'm using forecast.io to have JSON data of weather it's free to use, try it!!
 
-Note that the location provided into the application is dynamic but is not exactly the same place you are (for me for example I'm in Würzburg and it tells me Berlin ) that's because I took the location from the API of forecast.
+//Note that the location provided into the application is dynamic but is not exactly the same place you are (for me for example //I'm in Würzburg and it tells me Berlin ) that's because I took the location from the API of forecast.
+
+==>Updated using Geocoder to get the exact location name of the user.
 
 If you want to change it there is a several way to do it :)
 
